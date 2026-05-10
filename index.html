@@ -20,22 +20,22 @@
       }
 
       #floorMenu {
-  position: absolute;
-  width: 100%;
-  height: 100vh;
+        position: absolute;
+        width: 100%;
+        height: 100vh;
 
-  display: grid;
-grid-template-columns: 1fr;  /* ← Una sola columna */
-  grid-template-rows: repeat(5, 1fr);  /* ← 5 filas */
+        display: grid;
+        grid-template-columns: 1fr; /* ← Una sola columna */
+        grid-template-rows: repeat(5, 1fr); /* ← 5 filas */
 
-  gap: 20px;
+        gap: 20px;
 
-  padding: 25px;
+        padding: 25px;
 
-  background: radial-gradient(circle at top, #1e293b, #020617);
+        background: radial-gradient(circle at top, #1e293b, #020617);
 
-  z-index: 10;
-}
+        z-index: 10;
+      }
 
       .floorCard {
         background: rgba(15, 23, 42, 0.75);
@@ -60,7 +60,12 @@ grid-template-columns: 1fr;  /* ← Una sola columna */
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.3), transparent);
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(59, 130, 246, 0.3),
+          transparent
+        );
         transition: left 0.5s ease;
       }
 
@@ -258,13 +263,21 @@ grid-template-columns: 1fr;  /* ← Una sola columna */
         margin-bottom: 20px;
         padding: 16px;
         border-radius: 14px;
-        background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.6));
+        background: linear-gradient(
+          135deg,
+          rgba(30, 41, 59, 0.8),
+          rgba(15, 23, 42, 0.6)
+        );
         border: 1px solid rgba(59, 130, 246, 0.2);
         transition: all 0.3s ease;
       }
 
       .infoSection:hover {
-        background: linear-gradient(135deg, rgba(30, 41, 59, 1), rgba(15, 23, 42, 0.8));
+        background: linear-gradient(
+          135deg,
+          rgba(30, 41, 59, 1),
+          rgba(15, 23, 42, 0.8)
+        );
         border-color: rgba(59, 130, 246, 0.5);
       }
 
@@ -525,8 +538,12 @@ grid-template-columns: 1fr;  /* ← Una sola columna */
       }
 
       @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
       }
     </style>
   </head>
@@ -582,16 +599,16 @@ grid-template-columns: 1fr;  /* ← Una sola columna */
 
     <script>
       // ==================== API CONFIGURATION ====================
-      
-      const API_URL = 'http://localhost:3000/api';
-      
+
+      const API_URL = "http://localhost:3000/api";
+
       // Estructura temporal (fallback si la API no funciona)
       let buildingFloors = {
-        "PB": {
+        PB: {
           rooms: ["Sala PB-1", "Sala PB-2", "Sala PB-3"],
           racksPerRoom: 2,
         },
-        "ENTREPISO": {
+        ENTREPISO: {
           rooms: ["Sala Entrepiso"],
           racksPerRoom: 2,
         },
@@ -614,52 +631,54 @@ grid-template-columns: 1fr;  /* ← Una sola columna */
         pisos: [],
         salas: {},
         racks: {},
-        dispositivos: {}
+        dispositivos: {},
       };
 
       // Cargar datos desde la base de datos
       async function loadBuildingData() {
         try {
-          console.log('🔄 Cargando datos desde la API...');
-          
+          console.log("🔄 Cargando datos desde la API...");
+
           // Obtener todos los pisos
           const pisosResponse = await fetch(`${API_URL}/pisos`);
-          if (!pisosResponse.ok) throw new Error('Error al obtener pisos');
-          
+          if (!pisosResponse.ok) throw new Error("Error al obtener pisos");
+
           const pisos = await pisosResponse.json();
-          console.log('✅ Pisos cargados:', pisos);
-          
+          console.log("✅ Pisos cargados:", pisos);
+
           // Construir buildingFloors desde la API
           buildingFloors = {};
-          
+
           for (const piso of pisos) {
             try {
               const salasResponse = await fetch(`${API_URL}/salas/${piso.id}`);
-              if (!salasResponse.ok) throw new Error(`Error al obtener salas del piso ${piso.id}`);
-              
+              if (!salasResponse.ok)
+                throw new Error(`Error al obtener salas del piso ${piso.id}`);
+
               const salas = await salasResponse.json();
               console.log(`✅ Salas del piso ${piso.nombre}:`, salas);
-              
+
               buildingFloors[piso.nombre] = {
-                rooms: salas.map(s => s.nombre),
+                rooms: salas.map((s) => s.nombre),
                 racksPerRoom: salas[0]?.racksPerRoom || 2,
-                pisoId: piso.id
+                pisoId: piso.id,
               };
-              
+
               // Almacenar salas para referencia
               apiData.salas[piso.id] = salas;
-              
             } catch (error) {
-              console.error(`❌ Error cargando salas del piso ${piso.id}:`, error);
+              console.error(
+                `❌ Error cargando salas del piso ${piso.id}:`,
+                error,
+              );
             }
           }
-          
-          console.log('✅ Datos cargados exitosamente');
+
+          console.log("✅ Datos cargados exitosamente");
           renderFloorMenu();
-          
         } catch (error) {
-          console.error('❌ Error cargando datos desde la API:', error);
-          console.log('⚠️ Usando datos por defecto...');
+          console.error("❌ Error cargando datos desde la API:", error);
+          console.log("⚠️ Usando datos por defecto...");
           renderFloorMenu();
         }
       }
@@ -681,16 +700,16 @@ grid-template-columns: 1fr;  /* ← Una sola columna */
       // Renderizar menú de pisos
       function renderFloorMenu() {
         floorMenu.innerHTML = "";
-        
-        Object.keys(buildingFloors).forEach(floorName => {
+
+        Object.keys(buildingFloors).forEach((floorName) => {
           const floorData = buildingFloors[floorName];
           const emoji = floorData.emoji || "🏢";
-          
+
           const card = document.createElement("div");
           card.className = "floorCard";
           card.innerHTML = `${emoji} ${floorName}`;
           card.onclick = () => openFloor(floorName);
-          
+
           floorMenu.appendChild(card);
         });
       }
@@ -785,7 +804,8 @@ grid-template-columns: 1fr;  /* ← Una sola columna */
 
       function updateStats() {
         const onlineServers = devices.filter(
-          (d) => d.userData.type === "Servidor" && d.userData.status === "Online",
+          (d) =>
+            d.userData.type === "Servidor" && d.userData.status === "Online",
         ).length;
         const totalServers = devices.filter(
           (d) => d.userData.type === "Servidor",
@@ -1135,17 +1155,13 @@ grid-template-columns: 1fr;  /* ← Una sola columna */
           endPos.z += sw.position.z + 1;
 
           const cableColor = 0xff6600 + idx * 0x001100;
-          createCableTube(
-            startPos,
-            endPos,
-            cableColor,
-            `Uplink ${idx + 1}`,
-          );
+          createCableTube(startPos, endPos, cableColor, `Uplink ${idx + 1}`);
         });
 
         servers.forEach((server, serverIdx) => {
           const patchPanelIdx = Math.floor(serverIdx / 3);
-          const panel = patchPanels[Math.min(patchPanelIdx, patchPanels.length - 1)];
+          const panel =
+            patchPanels[Math.min(patchPanelIdx, patchPanels.length - 1)];
 
           if (panel) {
             const startPos = rackGroup.getWorldPosition(new THREE.Vector3());
@@ -1235,7 +1251,8 @@ grid-template-columns: 1fr;  /* ← Una sola columna */
               `;
             }
 
-            const statusClass = obj.userData.status === "Online" ? "online" : "offline";
+            const statusClass =
+              obj.userData.status === "Online" ? "online" : "offline";
 
             infoPanel.innerHTML = `
               <button id="closeInfo">✕</button>
@@ -1357,13 +1374,12 @@ grid-template-columns: 1fr;  /* ← Una sola columna */
       });
 
       // ==================== INICIALIZAR ====================
-      
+
       // Cargar datos al abrir la página
-      window.addEventListener('DOMContentLoaded', () => {
-        console.log('🚀 Iniciando aplicación...');
+      window.addEventListener("DOMContentLoaded", () => {
+        console.log("🚀 Iniciando aplicación...");
         loadBuildingData();
       });
-
     </script>
   </body>
 </html>
